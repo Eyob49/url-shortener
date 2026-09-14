@@ -1,0 +1,19 @@
+# Compiled binaries
+url-shortener
+*.exe
+*.out
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+*.coverprofile
+coverage.html
