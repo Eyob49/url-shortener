@@ -2,10 +2,29 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
 )
+
+func ValidateURL(rawURL string) (*url.URL, error) {
+	u, err := url.ParseRequestURI(rawURL)
+	if err != nil {
+		return nil, fmt.Errorf("invalid URL structure: %w", err)
+	}
+
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return nil, errors.New("URL scheme must be http or https")
+	}
+
+	if u.Hostname() == "" {
+		return nil, errors.New("URL missing host domain")
+	}
+
+	return u, nil
+}
 
 func handleCommand(store *URLStore, cmd string, args []string) error {
 	switch cmd {
@@ -48,7 +67,7 @@ func handleCommand(store *URLStore, cmd string, args []string) error {
 func main() {
 	store := NewURLStore()
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print(`Welcome to URL Shortener!\nType 'help' for commands.\n`)
+	fmt.Print("Welcome to URL Shortener!\nType 'help' for commands.\n")
 
 	for {
 		fmt.Print("> ")
