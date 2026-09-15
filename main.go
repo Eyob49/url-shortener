@@ -33,7 +33,12 @@ func handleCommand(store *URLStore, cmd string, args []string) error {
 			return fmt.Errorf("shorten requires a URL")
 		}
 
-		shortUrlCode := Shorten(store, args[0])
+		url, err := ValidateURL(args[0])
+		if err != nil {
+			return fmt.Errorf("error: %v", err)
+		}
+
+		shortUrlCode := Shorten(store, url.String())
 		fmt.Printf("Short Code: %s\n", shortUrlCode)
 	case "expand":
 		if len(args) == 0 {
@@ -50,10 +55,24 @@ func handleCommand(store *URLStore, cmd string, args []string) error {
 		for key, value := range url {
 			fmt.Printf("%s : %s\n", key, value)
 		}
+	case "delete":
+		if len(args) == 0 {
+			return fmt.Errorf("delete requires a short code")
+		}
+
+		shortCode := args[0]
+		_, exists := store.Get(args[0])
+		if !exists {
+			return fmt.Errorf("short code '%s' not found", shortCode)
+		}
+
+		store.Delete(shortCode)
+		fmt.Printf("Deleted: %s\n", shortCode)
 	case "help":
 		fmt.Print(`Commands:
 		shorten <URL>     - Create a short code for a URL
 		expand <code>     - Get the original URL
+		delete <code>     - Delete a short code mapping
 		list              - Show all mappings
 		help              - Show this message
 		exit              - Exit the program
