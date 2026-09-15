@@ -21,23 +21,21 @@ func GenerateShortCode(length int) string {
 func Shorten(store *URLStore, longURL string) string {
 	for {
 		randomToken := GenerateShortCode(6)
-	_, exists := store.Get(randomToken)
-	if !exists {
-		store.Add(randomToken, longURL)
-		return randomToken
-	}
+
+		_, exists := store.Get(randomToken)
+		if !exists {
+			store.Add(randomToken, longURL)
+			return randomToken
+		}
 
 	}
-	
-
-	
 }
 
-func Expand(store *URLStore, shortCode string) string {
+func Expand(store *URLStore, shortCode string) (string, error) {
 	longURL, exists := store.Get(shortCode)
 	if exists {
-		return fmt.Printf("%s : %s", shortCode, longURL)
+		return longURL, nil
 	}
-	fmt.Errorf("No matching record found")
-	return nil
+
+	return "", fmt.Errorf("No matching record found")
 }

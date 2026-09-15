@@ -5,18 +5,18 @@ import (
 )
 
 type URLStore struct {
-	mu sync.Mutex
+	mu   sync.Mutex
 	urls map[string]string
 }
 
-func NewURLStore() *URLStore{
+func NewURLStore() *URLStore {
 	return &URLStore{
-		mu: sync.Mutex{},
+		mu:   sync.Mutex{},
 		urls: map[string]string{},
 	}
 }
 
-func (s *URLStore) Add(shortCode, longURL string) error{
+func (s *URLStore) Add(shortCode, longURL string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -24,7 +24,7 @@ func (s *URLStore) Add(shortCode, longURL string) error{
 	return nil
 }
 
-func (s *URLStore) Get(shortCode string) (string, bool){
+func (s *URLStore) Get(shortCode string) (string, bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -32,14 +32,21 @@ func (s *URLStore) Get(shortCode string) (string, bool){
 	return urlCode, exists
 }
 
-func (s *URLStore) All() map[string]string{
+func (s *URLStore) All() map[string]string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	copy := make(map[string]string)
-	for code, url := range s.urls{
+	for code, url := range s.urls {
 		copy[code] = url
 	}
 
 	return copy
+}
+
+func (s *URLStore) Delete(shortCode string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	delete(s.urls, shortCode)
 }
